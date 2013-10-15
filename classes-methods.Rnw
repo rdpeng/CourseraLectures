@@ -1,0 +1,495 @@
+\documentclass[aspectratio=169]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+\usepackage[noae]{Sweave}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+\input{macros}
+
+\title[Classes and Methods in R]{Classes and Methods in R}
+
+\date{Computing for Data Analysis}
+
+\setbeamertemplate{footline}[page number]
+
+\setkeys{Gin}{width=0.4\textwidth}
+
+
+\begin{document}
+
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Classes and Methods}
+\begin{itemize}
+\item
+A system for doing object oriented programming
+\item R was originally quite interesting because it is both
+  interactive \textit{and} has a system for object orientation.
+\begin{itemize}
+\item
+Other languages which support OOP (C++, Java, Lisp, Python, Perl)
+generally speaking are not interactive languages
+\end{itemize}
+\item In R much of the code for supporting classes/methods is written
+  by John Chambers himself (the creator of the original S language)
+  and documented in the book \textit{Programming with Data: A Guide to the S
+  Language}
+\item A natural extension of Chambers' idea of allowing someone to
+  cross the user $\longrightarrow$ programmer spectrum
+\item Object oriented programming is a bit different in R than it is
+  in most languages --- even if you are familiar with the idea, you
+  may want to pay attention to the details
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Two styles of classes and methods}
+S3 classes/methods
+\begin{itemize}
+\item
+Included with version 3 of the S language.
+\item
+Informal, a little kludgey
+\item
+Sometimes called \textit{old-style} classes/methods
+\end{itemize}
+S4 classes/methods
+\begin{itemize}
+\item
+more formal and rigorous
+\item
+Included with S-PLUS 6 and R  1.4.0 (December 2001)
+\item
+Also called \textit{new-style} classes/methods
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Two worlds living side by side}
+\begin{itemize}
+\item For now (and the forseeable future), S3 classes/methods and S4
+  classes/methods are separate systems (but they can be mixed to some
+  degree).
+\item
+Each system can be used fairly independently of the other.
+\item
+Developers of new projects (you!) are encouraged to use the S4
+style classes/methods.
+\begin{itemize}
+\item
+Used extensively in the Bioconductor project
+\end{itemize}
+\item
+But many developers still use S3 classes/methods because they
+are ``quick and dirty" (and easier).
+\item
+In this lecture we will focus primarily on S4 classes/methods
+\item The code for implementing S4 classes/methods in R is in the
+  \textbf{methods} package, which is usually loaded by default (but
+  you can load it with \code{library(methods)} if for some reason it
+  is not loaded)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Object Oriented Programming in R}
+\begin{itemize}
+\item A \textit{class} is a description of an thing. A class can be
+  defined using \code{setClass()} in the \textbf{methods} package.
+\item
+An \textit{object} is an instance of a class. Objects can be created
+using \code{new()}.
+\item A \textit{method} is a function that only operates on a certain
+  class of objects.
+\item A generic function is an R function which dispatches methods.  A
+  generic function typically encapsulates a ``generic" concept
+  (e.g. \code{plot}, \code{mean}, \code{predict}, ...)
+\begin{itemize}
+\item
+The generic function does not actually do any computation.
+\end{itemize}
+\item
+A \textit{method} is the implementation of a generic function for an
+object of a particular class.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Things to look up}
+\begin{itemize}
+\item
+The help files for the `methods' package are extensive --- do read
+them as they are the primary documentation
+\item 
+You may want to start with \code{?Classes} and \code{?Methods}
+\item
+Check out \code{?setClass}, \code{?setMethod}, and \code{?setGeneric}
+\item
+Some of it gets technical, but try your best for now---it will make
+sense in the future as you keep using it.
+\item Most of the documentation in the \textbf{methods} package is
+  oriented towards developers/programmers as these are the primary
+  people using classes/methods
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Classes}
+All objects in R have a class which can be determined by the class
+function
+<<examplesclasses>>=
+class(1)
+class(TRUE)
+class(rnorm(100))
+class(NA)
+class("foo")
+@ 
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Classes (cont'd)}
+Data classes go beyond the atomic classes
+<<lmclass>>=
+x <- rnorm(100)
+y <- x + rnorm(100)
+fit <- lm(y ~ x)  ## linear regression model
+class(fit)
+@ 
+\end{frame}
+
+\begin{frame}{Generics/Methods in R}
+\begin{itemize}
+\item
+S4 and S3 style generic functions look different but conceptually,
+they are the same (they play the same role).
+\item
+When you program you can write new methods for an existing generic OR
+create your own generics and associated methods.
+\item Of course, if a data type does not exist in R that matches your
+  needs, you can always define a new class along with generics/methods
+  that go with it
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{An S3 generic function (in the `base' package)}
+The \code{mean} function is generic
+<<printmean>>=
+mean
+@ 
+
+So is the \code{print} function
+<<printprint>>=
+print
+@ 
+\end{frame}
+
+
+\begin{frame}[fragile]{S3 methods}
+<<methodsmean>>=
+methods("mean")
+@ 
+\end{frame}
+
+
+\begin{frame}[fragile]{An S4 generic function (from the `methods' package)}
+The S4 equivalent of \code{print} is \code{show}  
+<<showmethod>>=
+show
+@ 
+
+The \code{show} function is usually not called directly (much like
+\code{print}) because objects are auto-printed
+\end{frame}
+
+\begin{frame}[fragile]{S4 methods}
+There are many different methods for the \code{show} generic
+function
+<<showmethodsshow>>=
+showMethods("show")
+@   
+\end{frame}
+
+
+\begin{frame}{Generic/method mechanism}
+The first argument of a generic function is an object of a particular
+class (there may be other arguments)
+\begin{enumerate}
+\item
+The generic function checks the class of the object.
+\item
+A search is done to see if there is an appropriate method for
+that class.
+\item
+If there exists a method for that class, then that method is
+called on the object and we're done.
+\item
+If a method for that class does not exist, a search is done to see
+if there is a default method for the generic. If a default exists,
+then the default method is called.
+\item
+If a default method doesn't exist, then an error is thrown.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Examining Code for Methods}
+Examining the code for an S3 or S4 method requires a call to a special
+function
+\begin{itemize}
+\item You cannot just print the code for a method like other
+functions because the code for the method is usually hidden.
+\item If you want to see the code for an S3 method, you can use the function
+\code{getS3method}.
+\item The call is \code{getS3method(<generic>, <class>)}
+\item For S4 methods you can use the function \code{getMethod}
+\item The call is \code{getMethod(<generic>, <signature>)} (more
+  details later)
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{S3 Class/Method: Example 1}
+ What's happening here?
+<<meanexample>>=
+set.seed(2)
+x <- rnorm(100)
+mean(x)
+@ 
+\begin{enumerate}
+\item
+The class of x is ``numeric''
+\item
+But there is no mean method for ``numeric'' objects!
+\item
+So we call the default function for \code{mean}.
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}[fragile]{S3 Class/Method: Example 1}
+<<showmean>>=
+head(getS3method("mean", "default"))
+tail(getS3method("mean", "default"))
+@ 
+\end{frame}
+
+\begin{frame}[fragile]{S3 Class/Method: Example 2}
+  What happens here?
+<<dataframemean>>=
+set.seed(3)
+df <- data.frame(x = rnorm(100), y = 1:100)
+sapply(df, mean)
+@   
+\begin{enumerate}
+\item
+The class of df is ``data.frame''; in a data frame each column can be
+an object of a different class
+\item
+We \code{sapply} over the columns and call the \code{mean} function
+\item
+In each column, \code{mean} checks the class of the object and
+dispatches the appropriate method.
+\item Here we have a \code{numeric} column and an \code{integer}
+  column; in both cases \code{mean} calls the default method
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}{Calling Methods}
+NOTE: Some methods are visible to the user (i.e. \code{mean.default}),
+but you should \textbf{never} call methods directly. Rather, use the
+generic function and let the method be dispatched automatically.
+\end{frame}
+
+
+\begin{frame}[fragile]{S3 Class/Method: Example 3}
+  The \code{plot} function is generic and its behavior depends on the
+  object being plotted.
+<<plotdefault,fig=true>>=
+set.seed(10)
+x <- rnorm(100)
+plot(x)
+@ 
+\end{frame}
+
+
+\begin{frame}[fragile]{S3 Class/Method: Example 3}
+  For time series objects, \code{plot} connects the dots
+<<plotts,fig=true>>=
+set.seed(10)
+x <- rnorm(100)
+x <- as.ts(x)  ## Convert to a time series object
+plot(x)
+@ 
+\end{frame}
+
+\begin{frame}{Write your own methods!}
+If you write new methods for new classes, you'll probably end up
+writing methods for the following generics:
+\begin{itemize}
+\item
+print/show
+\item
+summary
+\item
+plot
+\end{itemize}
+There are two ways that you can extend the R system via classes/methods
+\begin{itemize}
+\item Write a method for a new class but for an existing generic
+  function (i.e. like \code{print})
+\item Write new generic functions and new methods for those generics
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{S4 Classes}
+Why would you want to create a new class?
+\begin{itemize}
+\item
+To represent new types of data (e.g. gene expression, space-time,
+hierarchical, sparse matrices)
+\item
+New concepts/ideas that haven't been thought of yet (e.g. a fitted
+point process model, mixed-effects model, a sparse matrix)
+\item
+To abstract/hide implementation details from the user
+\end{itemize}
+I say things are ``new'' meaning that R does not know about them (not
+that they are new to the statistical community).
+\end{frame}
+
+\begin{frame}{S4 Class/Method: Creating a New Class}
+  A new class can be defined using the \code{setClass} function
+\begin{itemize}
+\item At a minimum you need to specify the name of the class
+\item You can also specify data elements that are called \textit{slots}
+\item You can then define methods for the class with the
+  \code{setMethod} function
+\item Information about a class definition can be obtained with the
+  \code{showClass} function
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{S4 Class/Method: Polygon Class}
+Creating new classes/methods is usually not something done at the
+console; you likely want to save the code in a separate file
+\begin{verbatim}
+setClass("polygon",
+         representation(x = "numeric",
+                        y = "numeric"))
+\end{verbatim}
+The slots for this class are \code{x} and \code{y}. The slots for an
+S4 object can be accessed with the \code{@} operator.
+\end{frame}
+
+\begin{frame}[fragile]{S4 Class/Method: Polygon Class}
+A \code{plot} method can be created with the \code{setMethod}
+function.
+\begin{itemize}
+\item For \code{setMethod} you need to specify a generic function
+  (\code{plot}), and a \textit{signature}.
+\item A signature is a character vector indicating the classes of
+  objects that are accepted by the method. In this case, the
+  \code{plot} method will take one type of object--a \code{polygon}
+  object.
+\end{itemize}
+\begin{verbatim}
+setMethod("plot", "polygon",
+          function(x, y, ...) {
+                  plot(x@x, x@y, type = "n", ...)
+                  xp <- c(x@x, x@x[1])
+                  yp <- c(x@y, x@y[1])
+                  lines(xp, yp)
+          })
+\end{verbatim}
+Notice that the slots of the polygon (the x- and y-coordinates) are
+accessed with the \code{@} operator.
+\end{frame}
+
+\begin{frame}[fragile]{S4 Class/Method: Polygon Class}
+  Create a new class
+<<createpolygonclass>>=
+setClass("polygon",
+         representation(x = "numeric",
+                        y = "numeric"))
+@ 
+
+Create a plot method for this class
+<<createplotmethod>>=
+setMethod("plot", "polygon",
+          function(x, y, ...) {
+                  plot(x@x, x@y, type = "n", ...)
+                  xp <- c(x@x, x@x[1])
+                  yp <- c(x@y, x@y[1])
+                  lines(xp, yp)
+          })
+@ 
+
+If things go well, you will not get any messages or errors and nothing
+useful will be returned by either \code{setClass} or \code{setMethod}.
+\end{frame}
+
+\begin{frame}[fragile]{S4 Class/Method: Polygon Class}
+After calling \code{setMethod} the new \code{plot} method will be
+added to the list of methods for \code{plot}.
+<<showMethods>>=
+showMethods("plot")
+@   
+
+Notice that the signature for class \code{polygon} is listed.  The
+method for \code{ANY} is the default method and it is what is called
+when now other signature matches
+\end{frame}
+
+\begin{frame}[fragile]{S4 Class/Method: Polygon class}
+<<showplotpolygon,fig=true>>=
+p <- new("polygon", x = c(1, 2, 3, 4), y = c(1, 2, 3, 1))
+plot(p)
+@ 
+\end{frame}
+
+
+\begin{frame}{Where to Look, Places to Start}
+\begin{itemize}
+\item
+The best way to learn this stuff is to look at examples (and try the
+exercises for the course)
+\item
+There are now quite a few examples on CRAN which use S4
+classes/methods.
+\item
+Bioconductor (http://www.bioconductor.org) --- a rich
+resource, even if you know nothing about bioinformatics
+\item
+Some packages on CRAN (as far as I know) --- SparseM,
+gpclib, flexmix, its, lme4, orientlib, pixmap
+\item
+The \code{stats4} package (comes with R) has a bunch of
+classes/methods for doing maximum likelihood analysis.
+\end{itemize}
+\end{frame}
+
+
+
+\end{document}

@@ -1,0 +1,505 @@
+\documentclass[aspectratio=169]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+\input{macros}
+
+\title[The R Language]{Introduction to the R Language}
+
+\subtitle{Plotting}
+
+\date{Computing for Data Analysis}
+
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}{Plotting}
+The plotting and graphics engine in R is encapsulated in a few base
+and recommend packages:
+\begin{itemize}
+\item
+\pkg{graphics}: contains plotting functions for the ``base'' graphing
+systems, including \code{plot}, \code{hist}, \code{boxplot} and many
+others.
+\item
+  \pkg{lattice}: contains code for producing Trellis graphics, which are
+  independent of the ``base'' graphics system; includes functions like
+  \code{xyplot}, \code{bwplot}, \code{levelplot}
+\item
+  \pkg{grid}: implements a different graphing system independent of the
+  ``base'' system; the \pkg{lattice} package builds on top of
+  \pkg{grid}; we seldom call functions from the \pkg{grid} package
+directly
+\item
+\pkg{grDevices}: contains all the code implementing the various
+graphics devices, including X11, PDF, PostScript, PNG, etc.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Process of Making a Plot}
+  When making a plot one must first make a few choices (not
+  necessarily in this order):
+\begin{itemize}
+\item To what device will the plot be sent?  The default in Unix is
+  \code{x11}; on Windows it is \code{windows}; on Mac OS X it is
+  \code{quartz}
+\item Is the plot for viewing temporarily on the screen, or will it
+  eventually end up in a paper?  Are you using it in a presentation?
+  Plots included in a paper/presentation need to use a file device
+  rather than a screen device.
+\item
+Is there a large amount of data going into the plot?  Or is it just a
+few points?  
+\item
+Do you need to be able to resize the graphic?  
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{The Process of Making a Plot}
+\begin{itemize}
+\item
+What graphics system will you use: base or grid/lattice?  These
+generally cannot be mixed.
+\item
+Base graphics are usually constructed piecemeal, with each aspect of
+the plot handled separately through a series of function calls; this
+is often conceptually simpler and allows plotting to mirror the
+thought process
+\item
+Lattice/grid graphics are usually created in a single function call,
+so all of the graphics parameters have to specified at once;
+specifying everything at once allows R to automatically calculate the
+necessary spacings and font sizes.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Base Graphics}
+Base graphics are used most commonly and are a very powerful system
+for creating 2-D graphics.  
+\begin{itemize}
+\item
+Calling \code{plot(x, y)} or \code{hist(x)} will launch a graphics
+device (if one is not already open) and draw the plot on the device
+\item
+If the arguments to \code{plot} are not of some special class, then
+the \textit{default method} for \code{plot} is called; this function
+has \textit{many} arguments, letting you set the title, x axis lable,
+y axis label, etc.
+\item
+The base graphics system has \textit{many} parameters that can set and
+tweaked; these parameters are documented in \code{?par}; it wouldn't
+hurt to memorize this help page!
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Some Important Base Graphics Parameters}
+The \code{par} function is used to specify global graphics parameters
+that affect all plots in an R session.  These parameters can often be
+overridden as arguments to specific plotting functions.
+\begin{itemize}
+\item
+pch:  the plotting symbol (default is open circle)
+\item
+lty: the line type (default is solid line), can be dashed, dotted,
+etc.
+\item
+lwd: the line width, specified as an integer multiple
+\item
+col: the plotting color, specified as a number, string, or hex code;
+the \code{colors} function gives you a vector of colors by name
+\item
+las: the orientation of the axis labels on the plot
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Some Important Base Graphics Parameters}
+\begin{itemize}
+\item
+bg: the background color
+\item
+mar:  the margin size
+\item
+oma:  the outer margin size (default is 0 for all sides)
+\item
+mfrow: number of plots per row, column (plots are filled row-wise)
+\item
+mfcol: number of plots per row, column (plots are filled column-wise)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Some Important Base Graphics Parameters}
+Some default values.
+\begin{verbatim}
+> par("lty")
+[1] "solid"
+> par("lwd")
+[1] 1
+> par("col")
+[1] "black"
+> par("pch")
+[1] 1
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Some Important Base Graphics Parameters}
+Some default values.
+\begin{verbatim}
+> par("bg")
+[1] "transparent"
+> par("mar")
+[1] 5.1 4.1 4.1 2.1
+> par("oma")
+[1] 0 0 0 0
+> par("mfrow")
+[1] 1 1
+> par("mfcol")
+[1] 1 1
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{Some Important Base Plotting Functions}
+\begin{itemize}
+\item
+\code{plot}: make a scatterplot, or other type of plot depending on
+the class of the object being plotted
+\item
+\code{lines}: add lines to a plot, given a vector x values and a
+corresponding vector of y values (or a 2-column matrix); this function
+just connects the dots
+\item
+\code{points}: add points to a plot
+\item
+\code{text}: add text labels to a plot using specified x, y
+coordinates
+\item
+\code{title}: add annotations to x, y axis labels, title, subtitle,
+outer margin
+\item
+\code{mtext}: add arbitrary text to the margins (inner or outer) of
+the plot
+\item
+\code{axis}: adding axis ticks/labels
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Useful Graphics Devices}
+The list of devices is found in \code{?Devices}; there are also
+devices created by users on CRAN
+\begin{itemize}
+\item
+\code{pdf}: useful for line-type graphics, vector
+format, resizes well, usually portable
+\item
+\code{postscript}: older format, also vector format and resizes well,
+usually portable, can be used to create encapsulated postscript files,
+Windows systems often don't have a postscript viewer
+\item
+\code{xfig}: good of you use Unix and want to edit a plot by hand
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Useful Graphics Devices}
+\begin{itemize}
+\item
+\code{png}: bitmapped format, good for line drawings or images with
+solid colors, uses lossless compression (like the old GIF format),
+most web browsers can read this format natively, good for plotting
+many many many points, does not resize well
+\item
+\code{jpeg}: good for photographs or natural scenes, uses lossy
+compression, good for plotting many many many points, does not resize
+well, can be read by almost any computer and any web browser, not
+great for line drawings
+\item
+\code{bitmap}: needed to create bitmap files (png, jpeg) in certain
+situations (uses Ghostscript), also can be used to create a variety of
+other bitmapped formats not mentioned
+\item
+\code{bmp}: a native Windows bitmapped format
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Copying Plots}
+There are two basic approaches to plotting.
+\begin{enumerate}
+\item
+Launch a graphics device
+\item
+Make a plot; annotate if needed
+\item
+Close graphics device
+\end{enumerate}
+Or
+\begin{enumerate}
+\item
+Make a plot on a screen device (default); annotate if needed
+\item
+Copy the plot to another device if necessary (not an exact process)
+\end{enumerate}
+\end{frame}
+
+
+\begin{frame}{Copying Plots}
+Copying a plot to another device can be useful because some plots
+require a lot of code and it can be a pain to type all that in again
+for a different device.
+\begin{itemize}
+\item \code{dev.copy}: copy a plot from one device to another
+\item \code{dev.copy2pdf}: copy a plot to a Portable Document Format
+  (PDF) file
+\item \code{dev.list}: show the list of open graphics devices
+\item \code{dev.next}: switch control to the next graphics device on
+  the device list
+\item \code{dev.set}: set control to a specific graphics device
+\item \code{dev.off}: close the current graphics device
+\end{itemize}
+NOTE: Copying a plot is not an exact operation!
+\end{frame}
+
+
+\begin{frame}{Lattice Functions}
+\begin{itemize}
+\item
+\code{xyplot}: this is the main function for creating scatterplots
+\item
+\code{bwplot}: box-and-whiskers plots (``boxplots'')
+\item
+\code{histogram}: histograms
+\item
+\code{stripplot}: like a boxplot but with actual points
+\item
+\code{dotplot}: plot dots on ``violin strings''
+\item
+\code{splom}: scatterplot matrix; like \code{pairs} in base graphics
+system
+\item
+\code{levelplot}, \code{contourplot}: for plotting ``image'' data
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Lattice Functions}
+Lattice functions generally take a formula for their first argument,
+usually of the form
+\begin{verbatim}
+y ~ x | f * g
+\end{verbatim}
+\begin{itemize}
+\item
+On the left of the \verb+~+ is the y variable, on the right is the x
+variable
+\item
+After the \verb+|+ are \textit{conditioning variables} --- they are
+optional; the \verb+*+ indicates an interaction
+\item
+The second argument is the data frame or list from which the variables
+in the formula should be obtained.
+\item
+If no data frame or list is passed, then the parent frame is used.
+\item
+If no other arguments are passed, there are defaults that can be used.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Lattice Behavior}
+Lattice functions behave differently from base graphics functions in
+one critical way.
+\begin{itemize}
+\item
+Base graphics functions plot data directly the graphics device
+\item
+Lattice graphics functions return an object of class \code{trellis}.
+\item
+The print methods for lattice functions actually do the work of
+plotting the data on the graphics device.
+\item
+Lattice functions return ``plot objects'' that can, in principle, be
+stored (but it's usually better to just save the code + data).
+\item
+On the command line, \code{trellis} objects are \textit{auto-printed}
+so that it appears the function is plotting the data
+\end{itemize}
+\end{frame}
+
+
+%% \begin{frame}[fragile]{Calling Lattice Functions}
+%% \begin{verbatim}
+%% p <- xyplot(y ~ x | f, subscripts = TRUE,
+%%             ylim = lattice:::extend.limits(range(lo, hi)),
+%%             panel = function(x, y, subscripts, ...) {
+%%                 panel.xyplot(x, y, ...)
+%%                 lsegments(x, lo[subscripts], 
+%%                           x, hi[subscripts])
+%%                 panel.abline(h = 0, lty = 2)
+%%             },
+%%             xlab = NULL, 
+%%             scales = list(x = list(at = 1:nmodels, labels = models, 
+%%                                    rot = 90, alternating = FALSE), 
+%%                           y = list(alternating = 3)),
+%%             ylab = list(label = expression("% increase in
+%%             admissions for a 10 " * mu * g/m^3 * " inceas%% e in " * PM[2.5]), cex = 0.8)
+%%             )
+%% print(p)
+%% \end{verbatim}
+%% \end{frame}
+
+
+\begin{frame}[fragile]{Lattice Panel Functions}
+Lattice functions have a \code{panel} function which controls what
+happens inside each panel of the entire plot.
+\begin{verbatim}
+x <- rnorm(100)
+y <- x + rnorm(100, sd = 0.5)
+f <- gl(2, 50, labels = c("Group 1", "Group 2"))
+xyplot(y ~ x | f)
+\end{verbatim}
+plots y vs. x conditioned on f.
+\end{frame}
+
+\begin{frame}[fragile]{Lattice Panel Functions}
+\begin{verbatim}
+xyplot(y ~ x | f,
+       panel = function(x, y, ...) {
+               panel.xyplot(x, y, ...)
+               panel.abline(h = median(y),
+                            lty = 2)
+       })
+\end{verbatim}
+plots y vs. x conditioned on f with horizontal (dashed) line drawn at
+the median of y for each panel.
+\end{frame}
+
+
+\begin{frame}[fragile]{Lattice Panel Functions}
+Adding a regression line
+\begin{verbatim}
+xyplot(y ~ x | f,
+       panel = function(x, y, ...) {
+               panel.xyplot(x, y, ...)
+               panel.lmline(x, y, col = 2)
+       })
+\end{verbatim}
+fits and plots a simple linear regression line to each panel of the
+plot.
+\end{frame}
+
+\begin{frame}[fragile]{Using Subscripts}
+Sometimes you need to access objects outside the panel envrionment.
+\begin{verbatim}
+y <- c(rnorm(10), rnorm(10, 2))
+x <- rep(1:10, 2)
+std <- rep(1, 20)
+rng <- range(y - 1.96 * std, y + 1.96 * std)
+f <- gl(2, 10)
+
+xyplot(y ~ x | f, subscripts = TRUE, ylim = rng,
+       panel = function(x, y, subscripts, ...) {
+               panel.xyplot(x, y, ...)
+               lsegments(x, y - 1.96 * std[subscripts],
+                         x, y + 1.96 * std[subscripts])
+               panel.abline(h = 0, lty = 2)
+       })
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}{Mathematical Annotation}
+R can produce \LaTeX-like symbols on a plot for mathematical
+annotation.  This is very handy and is useful for making fun of people
+who use other statistical packages.
+\begin{itemize}
+\item
+Math symbols are ``expressions'' in R and need to be wrapped in the
+\code{expression} function
+\item
+There is a set list of allowed symbols and this is documented in ?plotmath
+\item
+Plotting functions that take arguments for text generally allow
+expressions for math symbols
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Mathematical Annotation}
+Some examples.
+\begin{verbatim}
+plot(0, 0, main = expression(theta == 0), 
+     ylab = expression(hat(gamma) == 0),
+     xlab = expression(sum(x[i] * y[i], i==1, n)))
+\end{verbatim}
+Pasting strings together.
+\begin{verbatim}
+x <- rnorm(100)
+hist(x, 
+     xlab=expression("The mean (" * bar(x) * ") is " * 
+                     sum(x[i]/n,i==1,n)))
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Substituting}
+What if you want to use a computed value in the annotation?
+\begin{verbatim}
+x <- rnorm(100)
+y <- x + rnorm(100, sd = 0.5)
+plot(x, y, 
+     xlab=substitute(bar(x) == k, list(k=mean(x))),
+     ylab=substitute(bar(y) == k, list(k=mean(y)))
+     )
+\end{verbatim}
+Or in a loop of plots
+\begin{verbatim}
+par(mfrow = c(2, 2))
+for(i in 1:4) {
+        x <- rnorm(100)
+        hist(x, main=substitute(theta==num,list(num=i)))
+}
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}{Summary of Important Help Pages}
+\begin{itemize}
+\item
+?par
+\item
+?plot
+\item
+?xyplot
+\item
+?plotmath
+\item
+?axis
+\end{itemize}
+\end{frame}
+
+
+\end{document}

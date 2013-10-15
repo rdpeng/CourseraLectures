@@ -1,0 +1,262 @@
+\documentclass[aspectratio=169]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+\input{macros}
+
+\title[The R Language]{Introduction to the R Language}
+
+\subtitle{Control Structures}
+
+\date{Computing for Data Analysis}
+
+\setbeamertemplate{footline}[page number]
+
+
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Control Structures}
+Control structures in R allow you to control the flow of execution of
+the program, depending on runtime conditions.  Common structures are
+\begin{itemize}
+\item
+\code{if}, \code{else}: testing a condition
+\item
+\code{for}: execute a loop a fixed number of times
+\item
+\code{while}: execute a loop \textit{while} a condition is true
+\item
+\code{repeat}:  execute an infinite loop
+\item
+\code{break}: break the execution of a loop
+\item
+\code{next}: skip an interation of a loop
+\item
+\code{return}: exit a function
+\end{itemize}
+Most control structures are not used in interactive sessions, but
+rather when writing functions or longer expresisons.
+\end{frame}
+
+
+\begin{frame}[fragile]{Control Structures: if}
+\begin{verbatim}
+if(<condition>) {
+        ## do something
+} else {
+        ## do something else
+}
+
+if(<condition1>) {
+        ## do something
+} else if(<condition2>)  {
+        ## do something different
+} else {
+        ## do something different
+}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{if}
+This is a valid if/else structure.
+\begin{verbatim}
+if(x > 3) {
+        y <- 10
+} else {
+        y <- 0
+}
+\end{verbatim}
+So is this one.
+\begin{verbatim}
+y <- if(x > 3) {
+        10
+} else {
+        0
+}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{if}
+Of course, the \code{else} clause is not necessary.
+\begin{verbatim}
+if(<condition1>) {
+
+}
+
+if(<condition2>) {
+
+}
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]{for}
+\code{for} loops take an interator variable and assign it successive
+values from a sequence or vector.  For loops are most commonly used
+for iterating over the elements of an object (list, vector, etc.)
+\begin{verbatim}
+for(i in 1:10) {
+        print(i)
+}
+\end{verbatim}
+This loop takes the \code{i} variable and in each iteration of the
+loop gives it values 1, 2, 3, ..., 10, and then exits.
+\end{frame}
+
+\begin{frame}[fragile]{for}
+These three loops have the same behavior.
+\begin{verbatim}
+x <- c("a", "b", "c", "d")
+
+for(i in 1:4) {
+        print(x[i])
+}
+
+for(i in seq_along(x)) {
+        print(x[i])
+}
+
+for(letter in x) {
+        print(letter)
+}
+
+for(i in 1:4) print(x[i])
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Nested for loops}
+\code{for} loops can be nested.
+\begin{verbatim}
+x <- matrix(1:6, 2, 3)
+
+for(i in seq_len(nrow(x))) {
+        for(j in seq_len(ncol(x))) {
+                print(x[i, j])
+        }
+}
+\end{verbatim}
+Be careful with nesting though.  Nesting beyond 2--3 levels is often
+very difficult to read/understand.
+\end{frame}
+
+\begin{frame}[fragile]{while}
+While loops begin by testing a condition.  If it is true, then they
+execute the loop body.  Once the loop body is executed, the condition
+is tested again, and so forth.
+\begin{verbatim}
+count <- 0
+
+while(count < 10) {
+        print(count)
+        count <- count + 1
+}
+\end{verbatim}
+While loops can potentially result in infinite loops if not written
+properly.  Use with care!
+\end{frame}
+
+\begin{frame}[fragile]{while}
+Sometimes there will be more than one condition in the test.
+\begin{verbatim}
+z <- 5
+
+while(z >= 3 && z <= 10) {
+        print(z)
+        coin <- rbinom(1, 1, 0.5)
+
+        if(coin == 1) {  ## random walk
+                z <- z + 1
+        } else {
+                z <- z - 1
+        }
+}
+\end{verbatim}
+Conditions are always evaluated from left to right.
+\end{frame}
+
+\begin{frame}[fragile]{repeat}
+Repeat initiates an infinite loop; these are not commonly used in
+statistical applications but they do have their uses.  The only way to
+exit a \code{repeat} loop is to call \code{break}.
+\begin{verbatim}
+x0 <- 1
+tol <- 1e-8
+
+repeat {
+        x1 <- computeEstimate()
+
+        if(abs(x1 - x0) < tol) {
+                break
+        } else {
+                x0 <- x1
+        }
+}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}{repeat}
+The loop in the previous slide is a bit dangerous because there's no
+guarantee it will stop.  Better to set a hard limit on the number of
+iterations (e.g. using a for loop) and then report whether convergence
+was achieved or not.
+\end{frame}
+
+\begin{frame}[fragile]{next, return}
+\code{next} is used to skip an iteration of a loop
+\begin{verbatim}
+for(i in 1:100) {
+        if(i <= 20) {
+                ## Skip the first 20 iterations
+                next
+        }
+        ## Do something here
+}
+\end{verbatim}
+\code{return} signals that a function should exit and return a given
+value
+\end{frame}
+
+
+\begin{frame}{Control Structures}
+Summary
+\begin{itemize}
+  \item Control structures like \code{if}, \code{while}, and \code{for}
+    allow you to control the flow of an R program
+  \item Infinite loops should generally be avoided, even if they are
+    theoretically correct.
+  \item Control structures mentiond here are primarily useful for
+    writing programs; for command-line interactive work, the *apply
+    functions are more useful.
+\end{itemize}
+\end{frame}
+
+
+
+
+\end{document}
+
+

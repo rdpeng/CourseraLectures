@@ -1,0 +1,434 @@
+\documentclass[aspectratio=169]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+\input{macros}
+
+\title[The R Language]{Introduction to the R Language}
+
+\subtitle{Reading and Writing Data}
+
+\date{Computing for Data Analysis}
+
+\setbeamertemplate{footline}[page number]
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+\begin{frame}{Reading Data}
+There are a few principal functions reading data into R.
+\begin{itemize}
+\item
+\code{read.table}, \code{read.csv}, for reading tabular data
+\item
+\code{readLines}, for reading lines of a text file
+\item
+\code{source}, for reading in R code files (inverse of \code{dump})
+\item
+\code{dget}, for reading in R code files (inverse of \code{dput})
+\item
+\code{load}, for reading in saved workspaces
+\item
+\code{unserialize}, for reading single R objects in binary form
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Writing Data}
+There are analogous functions for writing data to files
+\begin{itemize}
+\item
+\code{write.table}
+\item
+\code{writeLines}
+\item
+\code{dump}
+\item
+\code{dput}
+\item
+\code{save}
+\item
+\code{serialize}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Reading Data Files with read.table}
+The \code{read.table} function is one of the most commonly used
+functions for reading data.  It has a few important arguments:
+\begin{itemize}
+\item
+\code{file}, the name of a file, or a connection
+\item
+\code{header}, logical indicating if the file has a header line
+\item
+\code{sep}, a string indicating how the columns are separated
+\item
+\code{colClasses}, a character vector indicating the class of each
+column in the dataset
+\item
+\code{nrows}, the number of rows in the dataset
+\item
+\code{comment.char}, a character string indicating the comment
+character
+\item
+\code{skip}, the number of lines to skip from the beginning
+\item
+\code{stringsAsFactors}, should character variables be coded as
+factors?
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{read.table}
+For small to moderately sized datasets, you can usually call
+\code{read.table} without specifying any other arguments
+\begin{verbatim}
+data <- read.table("foo.txt")
+\end{verbatim}
+R will automatically
+\begin{itemize}
+\item
+skip lines that begin with a \#
+\item
+figure out how many rows there are (and how much memory needs to be
+allocated)
+\item
+figure what type of variable is in each column of the table
+\end{itemize}
+Telling R all these things directly makes R run faster and more
+efficiently.
+\begin{itemize}
+\item
+\code{read.csv} is identical to \code{read.table} except that the
+default separator is a comma.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Reading in Larger Datasets with read.table}
+With much larger datasets, doing the following things will make your
+life easier and will prevent R from choking.
+\begin{itemize}
+\item
+Read the help page for \code{read.table}, which contains many hints
+\item
+Make a rough calculation of the memory required to store your dataset.
+If the dataset is larger than the amount of RAM on your computer, you
+can probably stop right here.
+\item
+Set \code{comment.char = ""} if there are no commented lines in your
+file.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Reading in Larger Datasets with read.table}
+\begin{itemize}
+\item
+Use the \code{colClasses} argument.  Specifying this option instead of
+using the default can make 'read.table' run MUCH faster, often twice
+as fast. In order to use this option, you have to know the class of
+each column in your data frame. If all of the columns are ``numeric'',
+for example, then you can just set \code{colClasses = "numeric"}.  A
+quick an dirty way to figure out the classes of each column is the
+following:
+\begin{verbatim}
+initial <- read.table("datatable.txt", nrows = 100)
+classes <- sapply(initial, class)
+tabAll <- read.table("datatable.txt", 
+                     colClasses = classes)
+\end{verbatim}
+\item
+Set \code{nrows}.  This doesn't make R run faster but it helps with
+memory usage.  A mild overestimate is okay.  You can use the Unix tool
+\code{wc} to calculate the number of lines in a file.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Know Thy System}
+In general, when using R with larger datasets, it's useful to know a
+few things about your system.
+\begin{itemize}
+\item
+How much memory is available?
+\item
+What other applications are in use?
+\item
+Are there other users logged into the same system?
+\item
+What operating system?
+\item
+Is the OS 32 or 64 bit?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Calculating Memory Requirements}
+I have a data frame with 1,500,000 rows and 120 columns, all of which
+are numeric data.  Roughly, how much memory is required to store this
+data frame?
+\begin{eqnarray*}
+1,500,000\times 120 \times\mbox{$8$ bytes/numeric}
+& = &
+1440000000\mbox{ bytes}\\
+& = &
+1440000000 / 2^{20}\mbox{ bytes/MB}\\
+& = &
+1,373.29\mbox{ MB}\\
+& = &
+1.34\mbox{ GB}
+\end{eqnarray*}
+\end{frame}
+
+
+\begin{frame}{Textual Formats}
+\begin{itemize}
+\item
+\code{dump}ing and \code{dput}ing are useful because the resulting
+textual format is edit-able, and in the case of corruption,
+potentially recoverable.
+\item
+Unlike writing out a table or csv file, \code{dump} and \code{dput}
+preserve the \textit{metadata} (sacrificing some readability), so that
+another user doesn't have to specify it all over again.
+\item
+Textual formats can work much better with version control programs
+like subversion or git which can only track changes meaningfully in
+text files
+\item Textual formats can be longer-lived; if there is corruption
+  somewhere in the file, it can be easier to fix the problem
+\item
+Textual formats adhere to the ``Unix philosophy''
+\item Downside: The format is not very space-efficient
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{dput-ting R Objects}
+Another way to pass data around is by deparsing the R object with
+\code{dput} and reading it back in using \code{dget}.
+\begin{verbatim}
+> y <- data.frame(a = 1, b = "a")
+> dput(y)
+structure(list(a = 1, 
+               b = structure(1L, .Label = "a", 
+                             class = "factor")), 
+          .Names = c("a", "b"), row.names = c(NA, -1L), 
+          class = "data.frame")
+> dput(y, file = "y.R")
+> new.y <- dget("y.R")
+> new.y
+  a b
+1 1 a
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]{Dumping R Objects}
+Multiple objects can be deparsed using the \code{dump} function and
+read back in using \code{source}.
+\begin{verbatim}
+> x <- "foo"
+> y <- data.frame(a = 1, b = "a")
+> dump(c("x", "y"), file = "data.R")
+> rm(x, y)
+> source("data.R")
+> y
+  a b
+1 1 a
+> x
+[1] "foo"
+\end{verbatim}
+\end{frame}
+
+
+
+\begin{frame}{Interfaces to the Outside World}
+Data are read in using \textit{connection} interfaces.  Connections
+can be made to files (most common) or to other more exotic things.
+\begin{itemize}
+\item
+\code{file}, opens a connection to a file
+\item
+\code{gzfile}, opens a connection to a file compressed with gzip
+\item
+\code{bzfile}, opens a connection to a file compressed with bzip2
+\item
+\code{url}, opens a connection to a webpage
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{File Connections}
+\begin{verbatim}
+> str(file)
+function (description = "", open = "", blocking = TRUE, 
+          encoding = getOption("encoding"))
+\end{verbatim}
+\begin{itemize}
+\item
+\code{description} is the name of the file
+\item
+\code{open} is a code indicating
+\begin{itemize}
+\item
+``r'' read only
+\item
+``w'' writing (and initializing a new file)
+\item
+``a'' appending
+\item
+``rb'', ``wb'', ``ab'' reading, writing, or appending in binary mode
+(Windows)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Connections}
+In general, connections are powerful tools that let you navigate files
+or other external objects.  In practice, we often don't need to deal
+with the connection interface directly.
+\begin{verbatim}
+con <- file("foo.txt", "r")
+data <- read.csv(con)
+close(con)
+\end{verbatim}
+is the same as
+\begin{verbatim}
+data <- read.csv("foo.txt")
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]{Reading Lines of a Text File}
+The \code{readLines} function can be used to simply read lines of a
+text file and store them in a character vector.
+\begin{verbatim}
+> con <- gzfile("words.gz")
+> x <- readLines(con, 10)
+> x
+ [1] "1080"     "10-point" "10th"     "11-point"
+ [5] "12-point" "16-point" "18-point" "1st"
+ [9] "2"        "20-point"
+\end{verbatim}
+\code{writeLines} takes a character vector and writes each element one
+line at a time to a text file.
+\end{frame}
+
+
+\begin{frame}[fragile]{Reading Lines of a Text File}
+\code{readLines} can be useful for reading in lines of webpages
+\begin{verbatim}
+## This might take time
+con <- url("http://www.jhsph.edu", "r")
+x <- readLines(con)
+> head(x)
+[1] "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">"
+[2] ""
+[3] "<html>"
+[4] "<head>"
+[5] "\t<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\" />"[6] "\t"
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Saving Data in Non-tabular Forms}
+For temporary storage or for transport, it is more efficient to save
+data in (compressed) binary form using \code{save} or
+\code{save.image}.
+\begin{verbatim}
+x <- 1
+y <- data.frame(a = 1, b = "a")
+save(x, y, file = "data.RData")
+load("data.RData")  ## overwrites existing x and y!
+\end{verbatim}
+Binary formats are not great for long-term storage because if they are
+corrupted, recovery is usually not possible.
+\end{frame}
+
+\begin{frame}{Serialization}
+Serialization is the process of taking an R object and converting into
+a representation as a ``series'' of bytes.  
+\begin{itemize}
+\item
+The \code{save} and \code{save.image} functions serialize R objects
+and then save them to files
+\item
+The \code{serialize} function can be used to serialize an R object to
+an arbitrary connection (database, socket, pipe, etc.)
+\item
+\code{unserialize} reads from an arbitrary connection and inverts a
+serialization, returning an R object
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Serialization}
+\begin{verbatim}
+>  x <- list(1, 2, 3)
+> serialize(x, NULL)
+ [1] 58 0a 00 00 00 02 00 02 06 01 00 02 03 00 00
+[16] 00 00 13 00 00 00 03 00 00 00 0e 00 00 00 01
+[31] 3f f0 00 00 00 00 00 00 00 00 00 0e 00 00 00
+[46] 01 40 00 00 00 00 00 00 00 00 00 00 0e 00 00
+[61] 00 01 40 08 00 00 00 00 00 00
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Serialization}
+\begin{verbatim}
+> con <- gzfile("foo.gz", "wb")
+> serialize(x, con)
+NULL
+> close(con)
+>
+> con <- gzfile("foo.gz", "rb")
+> y <- unserialize(con)
+> identical(x, y)
+[1] TRUE
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}{Data Output Summary}
+\begin{itemize}
+\item
+\code{write.table}, \code{write.csv} --- readable output, textual,
+little metadata
+\item
+\code{save}, \code{save.image}, \code{serialize} --- exact
+representation, efficient storage if compressed, not recoverable if
+corrupted
+\item
+\code{dput}, \code{dump} --- textual format, somewhat readable,
+metadata retained, not usable for more exotic objects (environments)
+\end{itemize}
+\end{frame}
+
+
+\end{document}

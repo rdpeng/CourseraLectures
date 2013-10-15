@@ -1,0 +1,321 @@
+\documentclass[aspectratio=169]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+\input{macros}
+
+\title[Overview and History of R]{Overview and History of R}
+
+
+\date{Computing for Data Analysis}
+
+\setbeamertemplate{footline}[page number]
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{What is R?}
+What is R?
+\end{frame}
+
+
+\begin{frame}{What is R?}
+R is a dialect of the S language.
+\end{frame}
+
+\begin{frame}{What is S?}
+\begin{itemize}
+\item
+S is a language that was developed by John Chambers and others at Bell
+Labs.
+\item
+S was initiated in 1976 as an internal statistical analysis
+environment---originally implemented as Fortran libraries.
+\item
+Early versions of the language did not contain functions for
+statistical modeling.
+\item
+In 1988 the system was rewritten in C and began to resemble the system
+that we have today (this was Version 3 of the language).  The book
+\textit{Statistical Models in S} by Chambers and Hastie (the white 
+book) documents the statistical analysis functionality.
+\item
+Version 4 of the S language was released in 1998 and is the version we
+use today.  The book \textit{Programming with Data} by John Chambers
+(the green book) documents this version of the language.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Historical Notes}
+\begin{itemize}
+\item
+In 1993 Bell Labs gave StatSci (now Insightful Corp.) an exclusive
+license to develop and sell the S language.
+\item
+In 2004 Insightful purchased the S language from Lucent for \$2
+million and is the current owner.
+\item
+In 2006, Alcatel purchased Lucent Technologies and is now called
+Alcatel-Lucent.
+\item
+Insightful sells its implementation of the S language under the
+product name S-PLUS and has built a number of fancy features (GUIs,
+mostly) on top of it---hence the ``PLUS''.
+\item
+In 2008 Insightful is acquired by TIBCO for \$25 million
+\item
+The fundamentals of the S language itself has not changed dramatically
+since 1998.
+\item
+In 1998, S won the Association for Computing Machinery's Software
+System Award.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{S Philosophy}
+In ``Stages in the Evolution of S'', John Chambers writes:
+\begin{quote}
+``[W]e wanted users to be able to begin in an interactive environment,
+where they did not consciously think of themselves as
+programming. Then as their needs became clearer and their
+sophistication increased, they should be able to slide gradually into
+programming, when the language and system aspects would become more
+important.''
+\end{quote}
+http://www.stat.bell-labs.com/S/history.html
+\end{frame}
+
+\begin{frame}{Back to R}
+\begin{itemize}
+\item
+1991: Created in New Zealand by Ross Ihaka and Robert Gentleman.
+Their experience developing R is documented in a 1996 \textit{JCGS}
+paper.
+\item
+1993: First announcement of R to the public.
+\item
+1995: Martin M\"achler convinces Ross and Robert to use the GNU
+General Public License to make R free software.
+\item
+1996: A public mailing list is created (R-help and R-devel)
+\item
+1997: The R Core Group is formed (containing some people associated
+with S-PLUS).  The core group controls the source code for R.
+\item
+2000: R version 1.0.0 is released.
+\item
+2012: R version 2.15.1 is released on June 22, 2012.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Features of R}
+\begin{itemize}
+\item
+Syntax is very similar to S, making it easy for S-PLUS users to switch
+over.
+\item
+Semantics are superficially similar to S, but in reality are quite
+different (more on that later).
+\item
+Runs on almost any standard computing platform/OS (even on the
+PlayStation 3)
+\item
+Frequent releases (annual + bugfix releases); active development.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Features of R (cont'd)}
+\begin{itemize}
+\item
+Quite lean, as far as software goes; functionality is divided into
+modular packages
+\item
+Graphics capabilities very sophisticated and better than most stat
+packages.
+\item
+Useful for interactive work, but contains a powerful programming
+language for developing new tools (user $\longrightarrow$ programmer)
+\item
+Very active and vibrant user community; R-help and R-devel mailing
+lists and Stack Overflow
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Features of R (cont'd)}
+It's free!\\
+(Both in the sense of beer and in the sense of speech.)
+\end{frame}
+
+\begin{frame}{Free Software}
+With \textit{free software}, you are granted
+\begin{itemize}
+\item
+The freedom to run the program, for any purpose (freedom 0).
+\item
+The freedom to study how the program works, and adapt it to your needs
+(freedom 1). Access to the source code is a precondition for this.
+\item
+The freedom to redistribute copies so you can help your neighbor
+(freedom 2).
+\item
+The freedom to improve the program, and release your improvements to
+the public, so that the whole community benefits (freedom 3). Access
+to the source code is a precondition for this.
+\end{itemize}
+http://www.fsf.org
+\end{frame}
+
+\begin{frame}{Drawbacks of R}
+\begin{itemize}
+\item
+Essentially based on 40 year old technology.
+\item
+Little built in support for dynamic or 3-D graphics (but things have
+improved greatly since the ``old days'').
+\item
+Functionality is based on consumer demand and user contributions.  If
+no one feels like implementing your favorite method, then it's
+\textit{your} job!
+\begin{itemize}
+\item (Or you need to pay someone to do it)
+\end{itemize}
+\item Objects must generally be stored in physical memory; but there
+  have been advancements to deal with this too
+\item
+Not ideal for all possible situations (but this is a drawback of all
+software packages).
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Design of the R System}
+The R system is divided into 2 conceptual parts:
+\begin{enumerate}
+\item
+The ``base'' R system that you download from CRAN
+\item
+Everything else.
+\end{enumerate}
+R functionality is divided into a number of \textit{packages}.
+\begin{itemize}
+\item
+The ``base'' R system contains, among other things, the \pkg{base}
+package which is required to run R and contains the most fundamental
+functions.
+\item
+The other packages contained in the ``base'' system include
+\pkg{utils}, \pkg{stats}, \pkg{datasets}, \pkg{graphics},
+\pkg{grDevices}, \pkg{grid}, \pkg{methods}, \pkg{tools},
+\pkg{parallel}, \pkg{compiler}, \pkg{splines}, \pkg{tcltk},
+\pkg{stats4}.
+\item
+There are also ``Recommend'' packages: \pkg{boot}, \pkg{class},
+\pkg{cluster}, \pkg{codetools}, \pkg{foreign}, \pkg{KernSmooth},
+\pkg{lattice}, \pkg{mgcv}, \pkg{nlme}, \pkg{rpart}, \pkg{survival},
+\pkg{MASS}, \pkg{spatial}, \pkg{nnet}, \pkg{Matrix}.
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}{Design of the R System}
+And there are many other packages available:
+\begin{itemize}
+\item
+There are about $4000$ packages on CRAN that have been developed by
+users and programmers around the world.
+\item
+There are also many packages associated with the Bioconductor project
+(http://bioconductor.org).
+\item
+People often make packages available on their personal websites; there
+is no reliable way to keep track of how many packages are available in
+this fashion.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Some R Resources}
+Available from CRAN (http://cran.r-project.org)
+\begin{itemize}
+\item
+An Introduction to R
+\item
+Writing R Extensions
+\item
+R Data Import/Export
+\item
+R Installation and Administration (mostly for building R from sources)
+\item
+R Internals (not for the faint of heart)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Some Useful Books on S/R}
+Standard texts
+\begin{itemize}
+\item
+Chambers (2008). \textit{Software for Data Analysis}, Springer. (your
+textbook)
+\item
+Chambers (1998). \textit{Programming with Data}, Springer.
+\item
+Venables \& Ripley (2002). \textit{Modern Applied Statistics with S},
+Springer.
+\item
+Venables \& Ripley (2000). \textit{S Programming}, Springer.
+\item
+Pinheiro \& Bates (2000). \textit{Mixed-Effects Models in S and
+S-PLUS}, Springer.
+\item
+Murrell (2005). \textit{R Graphics}, Chapman \& Hall/CRC Press.
+\end{itemize}
+Other resources
+\begin{itemize}
+\item
+Springer has a series of books called \textit{Use R!}.
+\item
+A longer list of books is at
+http://www.r-project.org/doc/bib/R-books.html
+\end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
+

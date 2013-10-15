@@ -1,0 +1,80 @@
+\documentclass[aspectratio=169]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+\input{macros}
+
+\title[The R Language]{Introduction to the R Language}
+
+\subtitle{Vectorized Operations}
+
+\date{Computing for Data Analysis}
+
+\setbeamertemplate{footline}[page number]
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}[fragile]{Vectorized Operations}
+Many operations in R are \textit{vectorized} making code more
+efficient, concise, and easier to read.
+\begin{verbatim}
+> x <- 1:4; y <- 6:9
+> x + y
+[1]  7  9 11 13
+> x > 2
+[1] FALSE FALSE  TRUE  TRUE
+> x >= 2
+[1] FALSE  TRUE  TRUE  TRUE
+> y == 8
+[1] FALSE FALSE  TRUE FALSE
+> x * y
+[1]  6 14 24 36
+> x / y
+[1] 0.1666667 0.2857143 0.3750000 0.4444444
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Vectorized Matrix Operations}
+\begin{verbatim}
+> x <- matrix(1:4, 2, 2); y <- matrix(rep(10, 4), 2, 2)
+> x * y       ## element-wise multiplication
+     [,1] [,2]
+[1,]   10   30
+[2,]   20   40
+> x / y
+     [,1] [,2]
+[1,]  0.1  0.3
+[2,]  0.2  0.4
+> x %*% y     ## true matrix multiplication
+     [,1] [,2]
+[1,]   40   40
+[2,]   60   60
+\end{verbatim}
+\end{frame}
+
+
+\end{document}

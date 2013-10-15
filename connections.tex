@@ -1,0 +1,98 @@
+\documentclass[aspectratio=169]{beamer}
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+%\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\usepackage{amsmath,amsfonts,amssymb}
+
+\input{macros}
+
+\title[The R Language]{Introduction to the R Language}
+
+\subtitle{Connections}
+
+\date{Computing for Data Analysis}
+
+\setbeamertemplate{footline}[page number]
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}{Interfaces to the Outside World}
+Data are read in using \textit{connection} interfaces.  Connections
+can be made to files (most common) or to other more exotic things.
+\begin{itemize}
+\item
+\code{file}, opens a connection to a file
+\item
+\code{gzfile}, opens a connection to a file compressed with gzip
+\item
+\code{bzfile}, opens a connection to a file compressed with bzip2
+\item
+\code{url}, opens a connection to a webpage
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{File Connections}
+\begin{verbatim}
+> str(file)
+function (description = "", open = "", blocking = TRUE, 
+          encoding = getOption("encoding"))
+\end{verbatim}
+\begin{itemize}
+\item
+\code{description} is the name of the file
+\item
+\code{open} is a code indicating
+\begin{itemize}
+\item
+``r'' read only
+\item
+``w'' writing (and initializing a new file)
+\item
+``a'' appending
+\item
+``rb'', ``wb'', ``ab'' reading, writing, or appending in binary mode
+(Windows)
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Connections}
+In general, connections are powerful tools that let you navigate files
+or other external objects.  In practice, we often don't need to deal
+with the connection interface directly.
+\begin{verbatim}
+con <- file("foo.txt", "r")
+data <- read.csv(con)
+close(con)
+\end{verbatim}
+is the same as
+\begin{verbatim}
+data <- read.csv("foo.txt")
+\end{verbatim}
+\end{frame}
+
+\end{document}
